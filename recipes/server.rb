@@ -17,9 +17,12 @@ end
 remote_file cached_file do
   source package_url
   mode 0644
+  not_if 'dpkg -s riemann'
 end
 
-dpkg_package cached_file
+dpkg_package cached_file do
+  not_if 'dpkg -s riemann'
+end
 
 runit_service 'riemann'
 
