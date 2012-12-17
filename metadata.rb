@@ -1,4 +1,4 @@
-name             'riemann-chef'
+name             'riemann'
 maintainer       'Nobody, really'
 maintainer_email 'none'
 description      'Installs/Configures Riemann'
