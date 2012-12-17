@@ -1,0 +1,86 @@
+; vim: filetype=clojure
+
+; Boundary's Riemann config.
+
+(logging/init :file "/var/log/riemann/riemann.log")
+
+(tcp-server)
+(udp-server)
+
+(periodically-expire 10)
+
+(let [email (mailer {:from "riemann"})
+      graph (graphite {:host "localhost"})
+
+      ; Keep events for 5 minutes by default
+      index (default :ttl 300 (update-index (index)))]
+
+  (info "new")
+
+  (streams
+    ; Overall event rate
+    (with {:metric 1.0 :host nil :state "ok" :service "events/sec"}
+      (rate 5 index))
+   
+    ; Graph health stats
+    (where (service #"^(cpu|memory|load|disk)")
+           graph)
+
+    ; Log expired events.
+    (expired
+      (fn [event] (info "expired" event)))
+
+    ; Riak misc
+    (where (and (service #"^riak")
+                (host #"data(01|02|03)"))
+           (adjust [:service (fn [s] (str "misc " s))]
+                   index
+                   graph
+
+                   ; Combined latencies
+                   (where (service #"riak (get|put)")
+                          (by :service
+                              (coalesce
+                                (combine folds/maximum
+                                         (with :host nil
+                                               index graph)))))
+
+                   ; Combined throughput
+                   (where (service #"riak (node_gets|node_puts)")
+                          (by :service
+                              (coalesce
+                                (combine folds/sum
+                                         (with :host nil
+                                               index graph)))))))
+         
+    ; Riak Kobayashi
+    (where (and (service #"^riak")
+                (host #"data(04|05|06|07|08|09|10|11|12)"))
+           (adjust [:service (fn [s] (str "kobayashi " s))]
+                   index
+                   graph
+
+                   ; Combined latencies
+                   (where (service #"riak (get|put)")
+                          (by :service
+                              (coalesce
+                                (combine folds/maximum
+                                         (with :host nil
+                                               index graph)))))
+
+                   ; Combined throughput & disk
+                   (where (service #"riak (node_gets|node_puts|disk|read_repairs)")
+                          (by :service
+                              (coalesce
+                                (combine folds/sum
+                                         (with :host nil
+                                               index graph)))))))
+
+    ; Index most other stuff
+    (where (not (service #"^riak"))
+           index)
+
+    (where (and (host "ashbdrystrm02p") (service #".*errs")) graph)
+    (where (and (host "ashbdrystrm02p") (service #".*packets")) graph)
+
+))
