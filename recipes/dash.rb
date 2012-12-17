@@ -28,7 +28,7 @@ template '/opt/riemann-dash/config.rb' do
   source 'config.rb.erb'
   owner 'riemann-dash'
   group 'riemann-dash'
-  variables (
+  variables(
     :riemann_server => node['riemann']['server']
   )
   mode 00644
