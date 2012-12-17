@@ -1,6 +1,6 @@
-riemann_server = search(:node, "recipe:riemann\\:\\:server AND chef_environment:#{node.chef_environment}").first
+riemann_server = node['riemann']['server']
 
-runit_service "riemann-health" do
+runit_service 'riemann-health' do
   options :host => riemann_server
 end
 
@@ -9,8 +9,7 @@ service 'riemann-health' do
   action [:start]
 end
 
-gem_package "riemann-tools" do
-  version '0.0.8'
+gem_package 'riemann-tools' do
   action :install
   notifies :restart, resources(:service => 'riemann-health')
 end

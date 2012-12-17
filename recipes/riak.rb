@@ -1,10 +1,9 @@
-gem_package "riemann-tools" do
-  version '0.0.7'
+gem_package 'riemann-tools' do
   action :install
 end
 
-riemann_server = search(:node, "recipe:riemann\\:\\:server AND chef_environment:#{node.chef_environment}").first
+riemann_server = node['riemann']['server']
 
-runit_service "riemann-riak" do
+runit_service 'riemann-riak' do
   options :host => riemann_server
 end

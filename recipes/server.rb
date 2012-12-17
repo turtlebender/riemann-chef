@@ -1,35 +1,42 @@
-version = '0.1.0'
+version = node['riemann']['version']
 
-user "riemann" do
-  home "/home/riemann"
-  shell "/bin/bash"
+if platform?('ubuntu', 'debian')
+  package_url = "#{node['riemann']['package_url']}/riemann_#{version}_all.deb"
+else
+  raise ArgumentError, "Platform #{platform} not supported"
+end
+
+cached_file = "#{Chef::Config[:file_cache_path]}/riemann_#{version}_all.deb"
+
+user 'riemann' do
+  home '/home/riemann'
+  shell '/bin/bash'
   system true
 end
 
-remote_file "/tmp/riemann_#{version}.deb" do
-  source "http://aphyr.com/riemann/riemann_#{version}.deb"
+remote_file cached_file do
+  source package_url
   mode 0644
 end
 
-dpkg_package "/tmp/riemann_#{version}.deb"
+dpkg_package cached_file
 
-runit_service "riemann"
+runit_service 'riemann'
 
-service "riemann" do
+service 'riemann' do
   supports :restart => true
   action [:start]
 end
 
-template "/etc/riemann/riemann.config" do
-  source "riemann.config.erb"
-  owner "root"
-  group "root"
+template '/etc/riemann/riemann.config' do
+  source 'riemann.config.erb'
+  owner 'root'
+  group 'root'
   mode 0644
-
   notifies :restart, resources(:service => 'riemann')
 end
 
-directory "/var/log/riemann/" do
+directory '/var/log/riemann/' do
   mode 0755
   owner 'riemann'
   group 'riemann'
