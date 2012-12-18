@@ -1,7 +1,11 @@
-riemann_server = node['riemann']['server']
+
+gem_package 'riemann-tools' do
+  action :install
+  notifies :restart, resources(:service => 'riemann-health')
+end
 
 runit_service 'riemann-health' do
-  options :host => riemann_server
+  options :host => node['riemann']['server']
 end
 
 service 'riemann-health' do
@@ -9,7 +13,3 @@ service 'riemann-health' do
   action [:start]
 end
 
-gem_package 'riemann-tools' do
-  action :install
-  notifies :restart, resources(:service => 'riemann-health')
-end
