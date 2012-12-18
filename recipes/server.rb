@@ -36,6 +36,16 @@ template '/etc/riemann/riemann.config' do
   owner 'root'
   group 'root'
   mode 0644
+  variables(
+    :tcp_listen_host => node['riemann']['listen']['tcp']['host'],
+    :tcp_listen_port => node['riemann']['listen']['tcp']['port'],
+    :udp_listen_host => node['riemann']['listen']['udp']['host'],
+    :udp_listen_port => node['riemann']['listen']['udp']['port'],
+    :expire_period => node['riemann']['expire_period'],
+    :event_ttl => node['riemann']['event_ttl'],
+    :email_from => node['riemann']['email_from'],
+    :graphite_host => node['riemann']['graphite']['host']
+  )
   notifies :restart, resources(:service => 'riemann')
 end
 
