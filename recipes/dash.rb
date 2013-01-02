@@ -24,7 +24,7 @@ remote_directory '/opt/riemann-dash' do
   notifies :restart, resources(:service => 'riemann-dash')
 end
 
-template '/opt/riemann-dash/config.rb' do
+template node['riemann']['dash']['config_default'] do
   source 'config.rb.erb'
   owner 'riemann-dash'
   group 'riemann-dash'
@@ -32,5 +32,6 @@ template '/opt/riemann-dash/config.rb' do
     :riemann_server => node['riemann']['server']
   )
   mode 00644
+  not_if { node['riemann']['dash']['config_file'] }
   notifies :restart, resources(:service => 'riemann-dash')
 end
