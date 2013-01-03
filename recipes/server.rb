@@ -31,7 +31,7 @@ service 'riemann' do
   action [:start]
 end
 
-template '/etc/riemann/riemann.config' do
+template node['riemann']['server']['config_default'] do
   source 'riemann.config.erb'
   owner 'root'
   group 'root'
@@ -46,6 +46,7 @@ template '/etc/riemann/riemann.config' do
     :email_from => node['riemann']['email_from'],
     :graphite_host => node['riemann']['graphite']['host']
   )
+  not_if { node['riemann']['server']['config_file'] }
   notifies :restart, resources(:service => 'riemann')
 end
 

@@ -12,4 +12,5 @@ default['riemann']['event_ttl']             = 300
 default['riemann']['email_from']            = 'riemann'
 default['riemann']['graphite']['host']      = 'localhost'
 
+default['riemann']['server']['config_default'] = '/etc/riemann/riemann.config'
 default['riemann']['dash']['config_default'] = '/opt/riemann-dash/config.rb'
