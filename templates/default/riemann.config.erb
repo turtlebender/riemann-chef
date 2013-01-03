@@ -19,7 +19,7 @@
     index
 
     ; Log all the things
-    (fn [event] (info (:metric event) (:service event))) 
+    (fn [event] (info (:host event) (:metric event) (:service event))) 
 
     ; Overall event rate
     (with {:metric 1.0 :host nil :state "ok" :service "events/sec"}
@@ -32,9 +32,6 @@
     ; Log expired events.
     (expired
       (fn [event] (info "expired" event)))
-
-    ; Index most other stuff
-    ;(index)
 
     (where (service #".*errs") graph)
     (where (service #".*packets") graph)
