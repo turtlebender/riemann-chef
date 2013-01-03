@@ -31,25 +31,6 @@ service 'riemann' do
   action [:start]
 end
 
-template node['riemann']['config_default'] do
-  source 'riemann.config.erb'
-  owner 'root'
-  group 'root'
-  mode 0644
-  variables(
-    :tcp_listen_host => node['riemann']['listen']['tcp']['host'],
-    :tcp_listen_port => node['riemann']['listen']['tcp']['port'],
-    :udp_listen_host => node['riemann']['listen']['udp']['host'],
-    :udp_listen_port => node['riemann']['listen']['udp']['port'],
-    :expire_period => node['riemann']['expire_period'],
-    :event_ttl => node['riemann']['event_ttl'],
-    :email_from => node['riemann']['email_from'],
-    :graphite_host => node['riemann']['graphite']['host']
-  )
-  not_if { node['riemann']['config_file'] }
-  notifies :restart, resources(:service => 'riemann')
-end
-
 directory '/var/log/riemann/' do
   mode 0755
   owner 'riemann'
