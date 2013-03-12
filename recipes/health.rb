@@ -1,4 +1,7 @@
 
+include_recipe 'runit'
+
+
 runit_service 'riemann-health' do
   options :host => node['riemann']['server']
 end
