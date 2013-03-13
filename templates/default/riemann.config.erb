@@ -1,6 +1,6 @@
 ; vim: filetype=clojure
 
-(logging/init :file "/var/log/riemann/riemann.log")
+(logging/init)
 
 (tcp-server :host "<%= @tcp_listen_host %>" :port <%= @tcp_listen_port %>)
 (udp-server :host "<%= @udp_listen_host %>" :port <%= @udp_listen_port %>)

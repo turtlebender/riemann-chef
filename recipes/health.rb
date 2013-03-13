@@ -1,18 +1,10 @@
-
-include_recipe 'runit'
-
-
-runit_service 'riemann-health' do
-  options :host => node['riemann']['server']
-end
-
-service 'riemann-health' do
-  supports :restart => true
-  action [:start]
-end
+include_recipe 'runit::default'
 
 gem_package 'riemann-tools' do
   action :install
-  notifies :restart, resources(:service => 'riemann-health')
 end
 
+runit_service 'riemann-health' do
+  options :host => node['riemann']['server']
+  default_logger true
+end

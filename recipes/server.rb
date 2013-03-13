@@ -24,7 +24,9 @@ dpkg_package cached_file do
   not_if 'dpkg -s riemann'
 end
 
-runit_service 'riemann'
+runit_service 'riemann' do
+  default_logger true
+end
 
 service 'riemann' do
   supports :restart => true

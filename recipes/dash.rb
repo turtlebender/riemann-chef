@@ -1,4 +1,3 @@
-
 group 'riemann-dash'
 
 user 'riemann-dash' do
@@ -20,7 +19,9 @@ directory node['riemann']['dash']['directory'] do
   action :create
 end
 
-runit_service 'riemann-dash'
+runit_service 'riemann-dash' do
+  default_logger true
+end
 
 service 'riemann-dash' do
   supports :restart => true

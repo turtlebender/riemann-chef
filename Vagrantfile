@@ -18,8 +18,8 @@ Vagrant::Config.run do |config|
 
   config.vm.host_name = "riemann-chef-berkshelf"
 
-  config.vm.box = "ubuntu12"
-  config.vm.box_url = "https://dl.dropbox.com/u/31081437/Berkshelf-CentOS-6.3-x86_64-minimal.box"
+  config.vm.box = "opscode_ubuntu-12.04_chef-11.2.0"
+  config.vm.box_url = "https://opscode-vm.s3.amazonaws.com/vagrant/opscode_ubuntu-12.04_chef-11.2.0.box"
 
   # Boot with a GUI so you can see the screen. (Default is headless)
   # config.vm.boot_mode = :gui
@@ -38,7 +38,7 @@ Vagrant::Config.run do |config|
 
   # Forward a port from the guest to the host, which allows for outside
   # computers to access the VM, whereas host only networking does not.
-  # config.vm.forward_port 80, 8080
+  config.vm.forward_port 4567, 8443
 
   # Share an additional folder to the guest VM. The first argument is
   # an identifier, the second is the path on the guest to mount the
@@ -58,7 +58,13 @@ Vagrant::Config.run do |config|
     }
 
     chef.run_list = [
-      "recipe[riemann-chef::default]"
+      "recipe[apt::default]",
+      "recipe[riemann::default]",
+      "recipe[java::default]",
+      "recipe[runit::default]",
+      "recipe[riemann::server]",
+      "recipe[riemann::health]",
+      "recipe[riemann::dash]",
     ]
   end
 end
